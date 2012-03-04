@@ -19,7 +19,7 @@ if(!empty($_GET["code"])){
 
 $token = $fb->getToken();
 if(empty($token)){
-    echo 'Not install App please go to <br>';
+    echo 'Not install App Please Go To <br>';
     echo $fb->getLoginUrl();
     exit(0);
 }
