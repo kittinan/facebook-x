@@ -30,7 +30,6 @@ class facebookx{
          */
         if(!empty($_REQUEST['signed_request'])){
             $data = $this->parse_signed_request($_REQUEST['signed_request'], $this->appSecret);
-            var_dump($data);
             if(!empty($data['oauth_token'])){
                 $this->token = 'access_token='.$data['oauth_token'];
             }
@@ -68,11 +67,12 @@ class facebookx{
     public function graph($url,$params = '',$isPost = false){
         if(empty($url)) return false;
         if($isPost){
-            return $this->httpPost($url, $params);
+            $data = $this->httpPost('https://graph.facebook.com'.$url, $params);
         }else{
             if(is_array($params))$params = http_build_query($params);
-            return $this->httpGet($url.'?'.$this->token.'&'.$params);
+            $data = $this->httpGet('https://graph.facebook.com'.$url.'?'.$this->token.'&'.$params);
         }
+        if(!empty($data)) return json_decode ($data);
     }
 
 
@@ -85,7 +85,7 @@ class facebookx{
     
         
     public function getUser($friend_id = 'me'){
-        return $this->graph('https://graph.facebook.com/'.$friend_id);
+        return $this->graph('/'.$friend_id.'/');
     }
     
     /*

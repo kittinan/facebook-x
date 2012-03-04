@@ -4,24 +4,48 @@ set_time_limit(0);
 
 require_once 'class/facebookx.php';
 
-$code = $_GET["code"];
-$f = new facebookx();
-$url = $f->loadToken($code,'http://facebook.localdomain/');
-var_dump($url);
-//$x = $f->getUser();
-//var_dump($x);
-$fql = 'SELECT uid,first_name,sex FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me()) ';
-$data = $f->getFQL($fql);
-echo count($data->data);
-$male = 0;
-$femail = 0;
-$xxx = array();
-foreach($data->data as $d){
-    if($d->sex == 'male') $male++;
-    else if($d->sex == 'female') $female++;
-    else        array_push ($xxx, $d);
+$appID = '103301849796687';
+$appSecret = 'e0fd2391f353738385378b935e9945aa';
+$perm = 'email,read_stream,publish_stream,user_photos';
+$redirect = 'http://facebook.localdomain/';
+
+
+$fb = new facebookx($appID,$appSecret,$redirect,$perm);
+
+
+if(!empty($_GET["code"])){
+    $fb->loadToken($_GET["code"]);
 }
-var_dump($male);
-var_dump($female);
-var_dump($xxx);
-var_dump($data);
+
+$token = $fb->getToken();
+if(empty($token)){
+    echo 'Not install App please go to <br>';
+    echo $fb->getLoginUrl();
+    exit(0);
+}
+
+echo "Token is $token";
+echo '<br><br>';
+
+//User
+echo '<h1>getUser()</h1>';
+$user = $fb->getUser();
+echo '<pre>';
+var_dump($user);
+echo '</pre>';
+
+
+echo '<h1>Sample Graph API</h1>';
+echo '/me/feed';
+$fql = $fb->graph('/me/feed');
+echo '<pre>';
+var_dump($fql);
+echo '</pre>';
+
+//fql
+echo '<h1>Sample FQL</h1>';
+$fql = $fb->fql('SELECT uid2 FROM friend WHERE uid1=me()');
+echo '<pre>';
+var_dump($fql);
+echo '</pre>';
+
